@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Website UI/UX Auditor</title>
+    <link rel="stylesheet" href="static/styles.css?v=8">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- HTML2PDF LIBRARY RESTORED -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style type="text/css" media="print">
+        /* INLINE CACHE-PROOF PRINT STYLES */
+        @page { size: auto; margin: 10mm; }
+        
+        html, body {
+            display: block !important;
+            height: auto !important;
+            background: #fff !important;
+            color: #000 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: visible !important;
+            width: 100% !important;
+        }
+
+        .input-section, .loading-section, .dashboard-header button, 
+        .new-audit-container, .comparison-section, .chat-widget, #chatOverlay, 
+        .background-elements, .chat-toggle-btn { 
+            display: none !important; 
+        }
+        
+        .container { display: block !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+        .dashboard { display: block !important; width: 100% !important; }
+        
+        .scores-grid {
+            display: block !important;
+            width: 100% !important;
+            overflow: hidden !important;
+            margin-bottom: 20px !important;
+        }
+        .score-card {
+            display: block !important;
+            float: left !important;
+            width: 22% !important; /* 4 items across = 88% + margins */
+            margin-right: 3% !important;
+            background: #fff !important;
+            border: 2px solid #ccc !important;
+            padding: 10px !important;
+            text-align: center !important;
+            box-sizing: border-box !important;
+            page-break-inside: avoid !important;
+        }
+        .score-card:last-child { margin-right: 0 !important; }
+        
+        .score-circle {
+            background: #fff !important; 
+            border: 4px solid #10b981 !important;
+            border-radius: 50% !important;
+            width: 70px !important;
+            height: 70px !important;
+            margin: 0 auto 10px auto !important;
+            line-height: 60px !important;
+            text-align: center !important;
+        }
+        
+        .score-value {
+            display: inline-block !important;
+            color: #000 !important;
+            font-size: 24px !important;
+            font-weight: bold !important;
+            line-height: normal !important;
+        }
+        
+        .score-card h3 { color: #000 !important; font-size: 14px !important; margin: 0 !important; }
+        
+        .details-grid { display: block !important; width: 100% !important; clear: both !important; padding-top: 20px !important; }
+        .panel { border: 2px solid #ccc !important; padding: 15px !important; margin-bottom: 20px !important; background: #fff !important; page-break-inside: avoid !important; }
+        
+        * { text-shadow: none !important; color: #000 !important; }
+        .text-success { color: #10b981 !important; }
+        .text-error { color: #ef4444 !important; }
+    </style>
+    <script>
+        // Dynamically strip inline gradients right before printing to fix Chrome's black blob bug
+        window.addEventListener("beforeprint", () => {
+            document.querySelectorAll('.score-circle').forEach(el => {
+                el.dataset.bg = el.style.background;
+                el.style.background = '#ffffff';
+            });
+        });
+        window.addEventListener("afterprint", () => {
+            document.querySelectorAll('.score-circle').forEach(el => {
+                if(el.dataset.bg) el.style.background = el.dataset.bg;
+            });
+        });
+    </script>
+</head>
+<body>
+
+    <div class="background-elements">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="container">
+        <!-- HEADER -->
+        <header class="header">
+            <h1 class="gradient-text"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Website Auditor</h1>
+            <p>Analyze UI/UX, SEO, Performance, and let AI redesign your elements instantly.</p>
+        </header>
+
+        <!-- INPUT SECTION -->
+        <section class="input-section" id="inputSection">
+            <div class="input-wrapper glass">
+                <i class="fa-solid fa-link input-icon"></i>
+                <input type="url" id="urlInput" placeholder="https://example.com" required>
+                <button id="auditBtn" class="btn primary-btn" onclick="startAudit()">Audit Now</button>
+            </div>
+            <div class="error-msg" id="errorMsg"></div>
+        </section>
+
+        <!-- LOADING STATE -->
+        <section class="loading-section hide" id="loadingSection">
+            <!-- Cyber-Matrix Scanner Overlay (Active during loading) -->
+            <div class="scanner-overlay active" id="loadingScanner">
+                <div class="scanning-grid"></div>
+                <div class="scan-line"></div>
+            </div>
+            
+            <div class="loader">
+                <div class="spinner"></div>
+                <h3 id="loadingText">Analyzing website architecture...</h3>
+                <p>This may take up to 20 seconds. AI is doing its magic.</p>
+            </div>
+        </section>
+
+        <!-- REPORT DASHBOARD -->
+        <section class="dashboard hide" id="dashboardSection">
+            
+            <div class="dashboard-header">
+                <h2>Audit Report for <span id="reportUrl" class="highlight"></span></h2>
+                <button class="btn secondary-btn" onclick="generateBulletproofPDF()"><i class="fa-solid fa-file-pdf"></i> Save as PDF</button>
+            </div>
+
+            <!-- SCORES -->
+            <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 2rem;">
+                
+                <div class="score-card glass" style="width: 100%; padding: 25px; display: block; text-align: left; box-sizing: border-box; position: relative; overflow: hidden;">
+                    <h2 style="margin: 0 0 10px 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.5rem;">
+                        <span><i class="fa-solid fa-ranking-star"></i> Final Audit Score</span>
+                        <span id="finalScoreVal" style="font-size: 2rem; font-weight: 800; color: #fff;">0</span>
+                    </h2>
+                    
+                    <!-- Updated Badge Layout (No Overlap) -->
+                    <div id="badgeContainer" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; min-height: 35px;"></div>
+                    
+                    <div class="progress-bar-bg" style="width: 100%; height: 35px; background: rgba(255,255,255,0.05); border-radius: 20px; overflow: hidden; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);">
+                        <div id="finalScoreBar" style="width: 0%; height: 100%; transition: width 1s cubic-bezier(0.1, 0.7, 0.1, 1), background 1s;"></div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; width: 100%;">
+                    <div class="score-card glass" style="flex: 1 1 45%; min-width: 250px; padding: 20px; display: block; text-align: left; box-sizing: border-box;">
+                        <h3 style="margin: 0 0 12px 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; color: #e2e8f0;">
+                            <span>UI/UX</span><span id="uiuxScore" style="font-weight: 700; color: #fff;">0</span>
+                        </h3>
+                        <div class="progress-bar-bg" style="width: 100%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 6px; box-shadow: inset 0 1px 5px rgba(0,0,0,0.5);">
+                            <div id="uiuxScoreBar" style="width: 0%; height: 100%; transition: width 1s cubic-bezier(0.1, 0.7, 0.1, 1), background 1s;"></div>
+                        </div>
+                    </div>
+
+                    <div class="score-card glass" style="flex: 1 1 45%; min-width: 250px; padding: 20px; display: block; text-align: left; box-sizing: border-box;">
+                        <h3 style="margin: 0 0 12px 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; color: #e2e8f0;">
+                            <span>SEO</span><span id="seoScore" style="font-weight: 700; color: #fff;">0</span>
+                        </h3>
+                        <div class="progress-bar-bg" style="width: 100%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 6px; box-shadow: inset 0 1px 5px rgba(0,0,0,0.5);">
+                            <div id="seoScoreBar" style="width: 0%; height: 100%; transition: width 1s cubic-bezier(0.1, 0.7, 0.1, 1), background 1s;"></div>
+                        </div>
+                    </div>
+
+                    <div class="score-card glass" style="flex: 1 1 45%; min-width: 250px; padding: 20px; display: block; text-align: left; box-sizing: border-box;">
+                        <h3 style="margin: 0 0 12px 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; color: #e2e8f0;">
+                            <span>Performance</span><span id="perfScore" style="font-weight: 700; color: #fff;">0</span>
+                        </h3>
+                        <div class="progress-bar-bg" style="width: 100%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 6px; box-shadow: inset 0 1px 5px rgba(0,0,0,0.5);">
+                            <div id="perfScoreBar" style="width: 0%; height: 100%; transition: width 1s cubic-bezier(0.1, 0.7, 0.1, 1), background 1s;"></div>
+                        </div>
+                    </div>
+
+                    <div class="score-card glass" style="flex: 1 1 45%; min-width: 250px; padding: 20px; display: block; text-align: left; box-sizing: border-box;">
+                        <h3 style="margin: 0 0 12px 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; color: #e2e8f0;">
+                            <span>Mobile</span><span id="mobileScore" style="font-weight: 700; color: #fff;">0</span>
+                        </h3>
+                        <div class="progress-bar-bg" style="width: 100%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 6px; box-shadow: inset 0 1px 5px rgba(0,0,0,0.5);">
+                            <div id="mobileScoreBar" style="width: 0%; height: 100%; transition: width 1s cubic-bezier(0.1, 0.7, 0.1, 1), background 1s;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXECUTIVE SUMMARY -->
+            <div id="execSummaryCard" class="panel glass" style="margin-bottom: 25px; border-left: 4px solid #a855f7; display: none; position: relative;">
+                <div style="position: absolute; top: 10px; right: 20px; font-size: 0.75rem; opacity: 0.6; font-style: italic;">AI-Generated Executive Pitch</div>
+                <h3 style="margin-bottom: 10px; color: #fff;"><i class="fa-solid fa-wand-magic-sparkles text-success"></i> Executive Summary & Business Impact</h3>
+                <p id="execSummaryText" style="font-size: 1.1rem; line-height: 1.6; color: #fff; margin: 0; font-weight: 400;"></p>
+            </div>
+
+            <!-- ISSUES & RECOMMENDATIONS -->
+            <div class="details-grid">
+                <div class="panel glass">
+                    <h3><i class="fa-solid fa-triangle-exclamation text-error"></i> Detected Issues</h3>
+                    <ul class="issue-list" id="issuesList"></ul>
+                </div>
+                <div class="panel glass">
+                    <div class="persona-banner" id="personaBanner">
+                        <div class="persona-avatar"><i class="fa-solid fa-user-tie"></i></div>
+                        <div>
+                            <strong id="personaName">UX Critic</strong>
+                            <p id="personaQuote" style="font-size: 0.85rem; opacity: 0.8;">"Let's see if this design survives my standards..."</p>
+                        </div>
+                    </div>
+                    <h3><i class="fa-solid fa-lightbulb text-success"></i> AI Recommendations</h3>
+                    <ul class="recommendation-list" id="recommendationsList"></ul>
+                </div>
+            </div>
+
+            <!-- BEFORE & AFTER COMPARISON & CODE -->
+            <div class="comparison-section h-md glass" data-html2canvas-ignore="true">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px;">
+                    <div>
+                        <h3><i class="fa-solid fa-code"></i> AI Generated UI Enhancement</h3>
+                        <p class="subtitle">A redesigned snippet based on your content.</p>
+                    </div>
+                    <div id="variantSelectorContainer" class="glass" style="padding: 10px; border-radius: 12px; display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 0.85rem; opacity: 0.8;">Switch Variant:</span>
+                        <select id="redesignVariantSelect" onchange="changeRedesignVariant(this.value)" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 6px; outline: none;">
+                            <option value="-1">V1 (Initial)</option>
+                            <option value="0">V2 (Bonus)</option>
+                            <option value="1">V3 (Bonus)</option>
+                            <option value="2">V4 (Bonus)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="variantInfo" class="glass" style="margin-bottom: 15px; padding: 10px 15px; border-radius: 8px; font-size: 0.9rem; display: none; border-left: 3px solid #22d3ee;">
+                    <i class="fa-solid fa-circle-info"></i> <strong>Layout:</strong> <span id="variantLayout">Default</span> | <strong>Style:</strong> <span id="variantStyle">Default</span>
+                </div>
+                
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('preview')">Live Preview</button>
+                    <button class="tab-btn" onclick="switchTab('slider')">Comparison Slider <span class="badge-new">NEW</span></button>
+                    <button class="tab-btn" onclick="switchTab('code')">Source Code</button>
+                </div>
+
+                <div class="tab-content">
+                    <!-- Preview Tab -->
+                    <div id="previewTab" class="view-pane active">
+                        <div class="split-view">
+                            <div class="view-half">
+                                <h4>Original Site (Heatmap Active)</h4>
+                                <div class="heatmap-container" id="originalContainer">
+                                    <button class="expand-btn" onclick="toggleFullscreen('originalContainer')"><i class="fa-solid fa-expand"></i></button>
+                                    <canvas id="heatmapCanvas" class="heatmap-canvas"></canvas>
+                                    <iframe id="originalIframe" class="preview-iframe" sandbox="allow-scripts allow-same-origin"></iframe>
+                                    <img id="originalScreenshot" class="preview-iframe" style="display: none; object-fit: contain; background: #000;">
+                                    <div id="iframeFallbackMsg" style="display: none; position: absolute; bottom: 10px; left: 10px; right: 10px; background: rgba(0,0,0,0.7); padding: 8px; border-radius: 4px; font-size: 0.75rem; color: #ffca28;">
+                                        <i class="fa-solid fa-circle-info"></i> Site blocks live preview. Showing screenshot instead.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="view-half">
+                                <h4>AI Redesign</h4>
+                                <div class="heatmap-container" id="aiContainer">
+                                    <button class="expand-btn" onclick="toggleFullscreen('aiContainer')"><i class="fa-solid fa-expand"></i></button>
+                                    <iframe id="aiIframe" class="preview-iframe" sandbox="allow-scripts allow-same-origin"></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Slider Tab -->
+                    <div id="sliderTab" class="view-pane hide">
+                        <div class="slider-comparison-container" id="sliderContainer">
+                            <div class="slider-layer before-layer">
+                                <img id="sliderOriginalImg" class="slider-img" src="">
+                                <div class="slider-label label-before">Original</div>
+                            </div>
+                            <div class="slider-layer after-layer" id="sliderAfterLayer">
+                                <iframe id="sliderAiIframe" class="slider-iframe" sandbox="allow-scripts allow-same-origin"></iframe>
+                                <div class="slider-label label-after">AI Redesign</div>
+                            </div>
+                            <div class="slider-handle" id="sliderHandle">
+                                <div class="slider-line"></div>
+                                <div class="slider-button"><i class="fa-solid fa-arrows-left-right"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Code Tab -->
+                    <div id="codeTab" class="view-pane hide">
+                        <div class="code-container">
+                            <button class="copy-btn" id="mainCopyBtn" onclick="
+                                var cb = document.getElementById('generatedCodeBlock');
+                                var txt = cb ? cb.innerText : '';
+                                var ta = document.createElement('textarea');
+                                ta.value = txt;
+                                ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px';
+                                document.body.appendChild(ta);
+                                ta.focus();
+                                ta.select();
+                                var ok = document.execCommand('copy');
+                                document.body.removeChild(ta);
+                                var btn = document.getElementById('mainCopyBtn');
+                                btn.innerHTML = ok ? '&#10003; Copied!' : '&#10007; Failed';
+                                setTimeout(function(){ btn.innerHTML = '&#128203; Copy Code'; }, 2000);
+                            "><i class="fa-regular fa-copy"></i> Copy Code</button>
+                            <pre><code id="generatedCodeBlock"></code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="new-audit-container">
+                <button class="btn outline-btn" onclick="resetApp()">Start New Audit</button>
+            </div>
+            
+        </section>
+
+    </main>
+
+    <!-- Fullscreen Overlay -->
+    <div id="redesignFullscreenContainer" class="fullscreen-container">
+        <button class="expand-btn" onclick="toggleFullscreen('redesignFullscreenContainer')">
+            <i class="fa-solid fa-expand"></i>
+        </button>
+        <div class="fullscreen-content" id="redesignFullscreenFrame"></div>
+    </div>
+
+    <!-- AI Optimization Expert Chatbot -->
+    <div id="aiChatWidget" class="chat-widget hide">
+        <div class="chat-header">
+            <div class="expert-info">
+                <div class="expert-avatar">
+                    <img src="static/robot_avatar.png" alt="AI Robot Expert" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                </div>
+                <div>
+                    <h4>Optimization Expert</h4>
+                    <span class="status">Online</span>
+                </div>
+            </div>
+            <button class="close-chat" onclick="toggleChat()"><i class="fa-solid fa-chevron-down"></i></button>
+        </div>
+        <div id="chatMessages" class="chat-messages">
+            <div class="message bot">
+                Hello! I'm your AI Website Expert. I've analyzed your audit results. How can I help you improve your site today?
+            </div>
+        </div>
+        <div class="chat-input-container">
+            <div class="chat-suggestions">
+                <button onclick="sendQuickMsg('Explain my SEO Score')">Explain SEO</button>
+                <button onclick="sendQuickMsg('How to fix UI issues?')">Fix UI</button>
+                <button onclick="sendQuickMsg('Maximize Performance')">Boost Speed</button>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Ask me anything about your site..." onkeypress="handleChatKey(event)">
+                <button onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <button id="chatToggleBtn" class="chat-toggle-btn hide" onclick="toggleChat()">
+        <i class="fa-solid fa-comment-dots"></i>
+        <span class="badge">AI Expert</span>
+    </button>
+
+    <div id="chatOverlay" class="chat-overlay hide" onclick="toggleChat()"></div>
+
+    <!-- DEDICATED PDF EXPORT CONTAINER (HIDDEN UNTIL CAPTURE) -->
+    <div id="pdf-export-container" style="display: none; background: white; color: black; padding: 40px; font-family: 'Inter', sans-serif; width: 800px;">
+        <h1 style="color: #111; font-size: 28px; border-bottom: 2px solid #ccc; padding-bottom: 10px;">UI/UX Audit Report</h1>
+        <p style="font-size: 16px; color: #333;"><strong>Target URL:</strong> <span id="pdfExportUrl"></span></p>
+
+        <div style="margin-top: 20px; background: #f8f9fa; border-left: 5px solid #8b5cf6; padding: 15px;">
+            <h3 style="margin: 0 0 10px 0; color: #111;">AI Executive Pitch</h3>
+            <p id="pdfExportExecSummary" style="margin: 0; font-size: 14px; line-height: 1.5; color: #444; font-style: italic;"></p>
+        </div>
+
+        <div id="pdfExportBadgeRow" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;"></div>
+
+        <h2 style="margin-top: 30px; color: #111; border-bottom: 1px solid #eee; padding-bottom: 5px;">Core Audit Scores</h2>
+        <table style="width: 100%; margin-top: 15px; border-collapse: collapse;">
+            <tr style="background: #10b981; color: white;">
+                <th style="padding: 10px; text-align: center; border: 1px solid #ddd; width: 25%;">UI/UX</th>
+                <th style="padding: 10px; text-align: center; border: 1px solid #ddd; width: 25%;">SEO</th>
+                <th style="padding: 10px; text-align: center; border: 1px solid #ddd; width: 25%;">Performance</th>
+                <th style="padding: 10px; text-align: center; border: 1px solid #ddd; width: 25%;">Mobile</th>
+            </tr>
+            <tr>
+                <td style="padding: 15px; text-align: center; border: 1px solid #ddd; font-size: 24px; font-weight: bold; color: #111;"><span id="pdfExportUiux">0</span>/100</td>
+                <td style="padding: 15px; text-align: center; border: 1px solid #ddd; font-size: 24px; font-weight: bold; color: #111;"><span id="pdfExportSeo">0</span>/100</td>
+                <td style="padding: 15px; text-align: center; border: 1px solid #ddd; font-size: 24px; font-weight: bold; color: #111;"><span id="pdfExportPerf">0</span>/100</td>
+                <td style="padding: 15px; text-align: center; border: 1px solid #ddd; font-size: 24px; font-weight: bold; color: #111;"><span id="pdfExportMob">0</span>/100</td>
+            </tr>
+        </table>
+
+        <h2 style="margin-top: 30px; color: #111; border-bottom: 1px solid #eee; padding-bottom: 5px;">Detected Issues</h2>
+        <div id="pdfExportIssues" style="margin-top: 10px; font-size: 14px; color: #444;"></div>
+
+        <h2 style="margin-top: 30px; color: #111; border-bottom: 1px solid #eee; padding-bottom: 5px;">AI Recommendations</h2>
+        <div id="pdfExportRecommendations" style="margin-top: 10px; font-size: 14px; color: #444;"></div>
+    </div>
+
+    <!-- JavaScript overrides for direct HTML2PDF export -->
+    <script>
+        function generateBulletproofPDF() {
+            // 1. Populate the hidden container with live data
+            document.getElementById('pdfExportUrl').innerText = document.getElementById('reportUrl').innerText;
+            document.getElementById('pdfExportUiux').innerText = document.getElementById('uiuxScore').innerText;
+            document.getElementById('pdfExportSeo').innerText = document.getElementById('seoScore').innerText;
+            document.getElementById('pdfExportPerf').innerText = document.getElementById('perfScore').innerText;
+            document.getElementById('pdfExportMob').innerText = document.getElementById('mobileScore').innerText;
+            
+            // AI Executive Summary
+            document.getElementById('pdfExportExecSummary').innerText = document.getElementById('execSummaryContent').innerText;
+
+            // Badges
+            const badgeContent = Array.from(document.querySelectorAll('#badgeContainer .achievement-badge')).map(badge => {
+                return `<span style="padding: 4px 10px; background: #eee; border-radius: 15px; font-size: 12px; font-weight: bold; margin-right: 5px; border: 1px solid #ccc;">${badge.innerText}</span>`;
+            }).join('');
+            document.getElementById('pdfExportBadgeRow').innerHTML = badgeContent;
+
+            // Format lists for simple HTML
+            const issuesItems = Array.from(document.querySelectorAll('#issuesList li')).map(li => `<li style="margin-bottom: 8px;">${li.innerText}</li>`).join('');
+            document.getElementById('pdfExportIssues').innerHTML = issuesItems ? `<ul style="padding-left: 20px;">${issuesItems}</ul>` : '<p>No critical issues detected.</p>';
+            
+            const recItems = Array.from(document.querySelectorAll('#recommendationsList li')).map(li => `<li style="margin-bottom: 8px;">${li.innerText}</li>`).join('');
+            document.getElementById('pdfExportRecommendations').innerHTML = recItems ? `<ul style="padding-left: 20px;">${recItems}</ul>` : '<p>No recommendations available.</p>';
+
+            // 2. Temporarily display the container for html2canvas
+            const pdfContainer = document.getElementById('pdf-export-container');
+            pdfContainer.style.display = 'block';
+
+            // 3. Configure html2pdf to process ONLY this clean container
+            const opt = {
+                margin:       15,
+                filename:     'audit_report.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // 4. Generate and save
+            html2pdf().set(opt).from(pdfContainer).save().then(() => {
+                // 5. Hide container again after successful download
+                pdfContainer.style.display = 'none';
+            });
+        }
+    </script>
+    <script src="static/app.js?v=9"></script>
+</body>
+</html>

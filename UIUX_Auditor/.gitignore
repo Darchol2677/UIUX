@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Project Specific
+audit_cache.json
+screenshots/
+temp_redesign/
+node_modules/
+.vscode/
+.DS_Store
