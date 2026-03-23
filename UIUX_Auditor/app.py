@@ -7,10 +7,10 @@ except:
     pass
 
 from flask import Flask, request, jsonify, render_template, session
-from scraper import scrape_website
-from analyzer import analyze_html, calculate_scores, clean_html_for_prompt
-from ai_engine import analyze_with_ai, chat_with_expert
-from redesign_engine import extract_site_content, generate_redesign_html, generate_bonus_redesigns
+from UIUX_Auditor.scraper import scrape_website
+from UIUX_Auditor.analyzer import analyze_html, calculate_scores, clean_html_for_prompt
+from UIUX_Auditor.ai_engine import analyze_with_ai, chat_with_expert
+from UIUX_Auditor.redesign_engine import extract_site_content, generate_redesign_html, generate_bonus_redesigns
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
