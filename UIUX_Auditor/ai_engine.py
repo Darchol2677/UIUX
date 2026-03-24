@@ -1,5 +1,6 @@
 import json
 import os
+import random
 from openai import OpenAI
 
 def analyze_with_ai(html_text: str, current_issues: list):
@@ -17,8 +18,8 @@ def analyze_with_ai(html_text: str, current_issues: list):
         issue_mapping = {
             "title": "Optimize your page title for SEO by including primary keywords and keeping it under 60 characters.",
             "description": "Add a compelling meta description to improve your Click-Through-Rate (CTR) from search engines.",
-            "<h1>": "Ensure you have exactly one <h1> tag representing the main topic of the page.",
-            "alt": "Add descriptive 'alt' text to all images to improve accessibility and image SEO.",
+            "<h1>": "Ensure you have exactly one main heading representing the main topic of the page.",
+            "alt": "Add descriptive text to all images to improve accessibility and image SEO.",
             "load time": "Optimize image sizes and consider lazy loading to bring load times under 2.5 seconds.",
             "Call-To-Action": "Add a prominent Call-to-Action (CTA) button 'above the fold' to increase user conversion.",
             "viewport": "Implement a responsive viewport meta tag to ensure your site is readable on mobile devices.",
@@ -30,9 +31,9 @@ def analyze_with_ai(html_text: str, current_issues: list):
         fallback_issues = ["OPENAI_API_KEY not set. AI scoring is estimated using heuristic logic."]
         
         fallback_issues = [
-            "Visual Hierarchy: The information architecture feels unstructured. Hero CTA is not distinct.",
-            "Color Contrast: Subtle background text may fail WCAG accessibility standards.",
-            "Typography: Primary heading font lacks personality and weight variance."
+            "Visual Hierarchy: The page layout feels unstructured and the primary Call-To-Action is not distinctly visible.",
+            "Color Contrast: Subtle text on backgrounds may be difficult for some users to read.",
+            "Typography: The main text fonts lack clear hierarchy, making it hard to scan the page quickly."
         ]
         recommendations = [
             "Implement a high-contrast 'Hero' section with a focal-point CTA.",
@@ -44,7 +45,7 @@ def analyze_with_ai(html_text: str, current_issues: list):
             "ui_ux_score": 72,
             "issues": fallback_issues + all_issues_list[:3],
             "recommendations": recommendations[:6],
-            "executive_summary": "Your site has strong potential, but the current visual hierarchy and contrast issues are limiting conversion. A modernization of the Hero section will significantly boost user engagement.",
+            "executive_summary": "Your site has strong potential, but current design flaws are limiting its impact. Addressing these issues will immediately enhance your digital visibility, increase user engagement, and drive higher lead generation.",
             "generated_code": ""
         }
 
@@ -53,30 +54,54 @@ def analyze_with_ai(html_text: str, current_issues: list):
 
     archetype = current_issues.get("archetype", "Modern Web")
     brand_tone = current_issues.get("brand_tone", "Professional, Clean")
+    all_issues = json.dumps(current_issues.get("allIssues", []))
 
     prompt = f"""
-You are a world-class 'Critical UX Designer & Copywriter'. 
-The current website you are auditing has been identified as follows:
-- **Industry/Archetype**: {archetype}
-- **Required Brand Tone**: {brand_tone}
+You are an expert UI/UX designer and frontend developer.
+Analyze the following website content. Its industry type is: {archetype}. Brand tone: {brand_tone}.
 
-Analyze the following content and provide optimized website copy and audit details.
+Based on its content, structure, and purpose, generate a COMPLETE and UNIQUE website redesign.
 
-Heuristic Issues found:
-{json.dumps(current_issues.get("allIssues", []))}
+IMPORTANT RULES:
+- Do NOT generate the same design every time
+- Make the design specific to the website type (ecommerce, blog, SaaS, portfolio, business, etc.)
+- Use modern UI/UX trends (2025 level)
+- Ensure mobile-first responsive design
 
-Page Text Content:
-{html_text}
+Heuristic Issues Found:
+{all_issues}
 
-Respond STRICTLY with a JSON object:
+Page Text Content (use this for real copy in the redesign):
+{html_text[:3000]}
+
+TASKS:
+1. Classify the website (ecommerce, blog, landing page, corporate, etc.)
+2. Identify 3-5 UI/UX issues in plain, non-technical English
+3. Generate a UNIQUE color scheme based on the industry (provide HEX codes)
+4. Write an executive summary highlighting how improvements enhance digital visibility, user engagement, and lead generation.
+5. Generate a MODERN, COMPLETE HTML redesign with embedded CSS:
+   - Use a beautiful Hero Section with real copy from the site
+   - Add Navigation, CTA buttons, Feature Cards, Footer
+   - Use Flexbox/Grid for layout
+   - Implement the unique color palette
+   - Use Google Fonts (Inter, Outfit, or Playfair Display based on context)
+   - Glassmorphism, gradients, or bold minimalism based on industry
+   - Fully self-contained (all CSS embedded in <style> tags inside <head>)
+
+Respond STRICTLY with this JSON object only (no markdown, no extra text):
 {{
-    "ui_ux_score": (0-100),
-    "issues": [3-5 industry-specific issues],
-    "recommendations": [3-5 improvements in a '{brand_tone}' tone],
-    "headlines_suggested": "...",
-    "subheadlines_suggested": "...",
-    "executive_summary": "A punchy, professional 2-sentence summary of why this redesign is needed for a winning hackathon pitch.",
-    "generated_code": "..."
+    "ui_ux_score": 0,
+    "website_type": "",
+    "issues": [],
+    "recommendations": [],
+    "color_palette": [],
+    "seo_suggestions": [],
+    "performance_tips": [],
+    "headlines_suggested": "",
+    "subheadlines_suggested": "",
+    "executive_summary": "",
+    "html_code": "<!DOCTYPE html>...(full redesigned page here)...",
+    "css_code": ""
 }}
 """
 
@@ -84,24 +109,31 @@ Respond STRICTLY with a JSON object:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "You output only valid JSON matching the exact schema provided. No extra text."},
+                {"role": "system", "content": "You are an expert UI/UX designer. Output only valid JSON matching the exact schema. No extra text, no markdown code blocks."},
                 {"role": "user", "content": prompt}
             ],
             response_format={"type": "json_object"},
-            temperature=0.7,
-            max_tokens=2048
+            temperature=0.9,
+            max_tokens=4096
         )
 
         result_json = response.choices[0].message.content
         data = json.loads(result_json)
+
+        # If html_code returned, use it as generated_code for the frontend
+        if data.get("html_code") and len(data["html_code"]) > 200:
+            data["generated_code"] = data["html_code"]
+        else:
+            data["generated_code"] = ""
+
         return data
     except Exception as e:
         print("AI Engine Error:", e)
         return {
             "ui_ux_score": 50,
-            "issues": [f"AI analysis failed: {str(e)}"],
+            "issues": ["AI analysis failed: " + str(e)],
             "recommendations": ["Check your OPENAI_API_KEY and rate limits."],
-            "generated_code": "<h2>Error generating AI code. Check your API key.</h2>"
+            "generated_code": ""
         }
 
 def chat_with_expert(message: str, audit_context: dict, history: list = None) -> str:

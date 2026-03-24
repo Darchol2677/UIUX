@@ -151,53 +151,53 @@
             <!-- SCORES -->
             <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 2rem;">
                 
-                <div class="score-card glass" style="width: 100%; padding: 25px; display: block; text-align: left; box-sizing: border-box; position: relative; overflow: hidden;">
-                    <h2 style="margin: 0 0 10px 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.5rem;">
-                        <span><i class="fa-solid fa-ranking-star"></i> Final Audit Score</span>
-                        <span id="finalScoreVal" style="font-size: 2rem; font-weight: 800; color: #fff;">0</span>
+                <div class="score-card glass" style="width: 100%; padding: 2rem; position: relative; overflow: hidden; align-items: stretch; text-align: left;">
+                    <h2 style="margin: 0 0 1rem 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.5rem; width: 100%;">
+                        <span><i class="fa-solid fa-ranking-star" style="color: var(--accent-primary);"></i> Final Audit Score</span>
+                        <span id="finalScoreVal" style="font-size: 2.2rem; font-weight: 800; color: var(--accent-primary);">0</span>
                     </h2>
                     
                     <!-- Updated Badge Layout (No Overlap) -->
-                    <div id="badgeContainer" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; min-height: 35px;"></div>
+                    <div id="badgeContainer" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; min-height: 35px; width: 100%;"></div>
                     
-                    <div class="progress-bar-bg" style="width: 100%; height: 35px; background: rgba(255,255,255,0.05); border-radius: 20px; overflow: hidden; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);">
+                    <div class="progress-bar-bg" style="width: 100%; height: 28px; background: #e2e8f0; border-radius: 14px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
                         <div id="finalScoreBar" style="width: 0%; height: 100%; transition: width 1s cubic-bezier(0.1, 0.7, 0.1, 1), background 1s;"></div>
                     </div>
                 </div>
 
-                <div style="display: flex; gap: 15px; flex-wrap: wrap; width: 100%;">
-                    <div class="score-card glass" style="flex: 1 1 45%; min-width: 250px; padding: 20px; display: block; text-align: left; box-sizing: border-box;">
-                        <h3 style="margin: 0 0 12px 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; color: #e2e8f0;">
-                            <span>UI/UX</span><span id="uiuxScore" style="font-weight: 700; color: #fff;">0</span>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; width: 100%;">
+                    <div class="score-card glass" style="padding: 1.5rem; align-items: stretch;">
+                        <h3 style="margin: 0 0 12px 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; color: var(--text-secondary); width: 100%;">
+                            <span>UI/UX</span><span id="uiuxScore" style="font-weight: 800; color: var(--text-primary); font-size: 1.3rem;">0</span>
                         </h3>
-                        <div class="progress-bar-bg" style="width: 100%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 6px; box-shadow: inset 0 1px 5px rgba(0,0,0,0.5);">
+                        <div class="progress-bar-bg" style="width: 100%; height: 12px; background: #e2e8f0; border-radius: 6px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">
                             <div id="uiuxScoreBar" style="width: 0%; height: 100%; transition: width 1s cubic-bezier(0.1, 0.7, 0.1, 1), background 1s;"></div>
                         </div>
                     </div>
 
-                    <div class="score-card glass" style="flex: 1 1 45%; min-width: 250px; padding: 20px; display: block; text-align: left; box-sizing: border-box;">
-                        <h3 style="margin: 0 0 12px 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; color: #e2e8f0;">
-                            <span>SEO</span><span id="seoScore" style="font-weight: 700; color: #fff;">0</span>
+                    <div class="score-card glass" style="padding: 1.5rem; align-items: stretch;">
+                        <h3 style="margin: 0 0 12px 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; color: var(--text-secondary); width: 100%;">
+                            <span>SEO</span><span id="seoScore" style="font-weight: 800; color: var(--text-primary); font-size: 1.3rem;">0</span>
                         </h3>
-                        <div class="progress-bar-bg" style="width: 100%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 6px; box-shadow: inset 0 1px 5px rgba(0,0,0,0.5);">
+                        <div class="progress-bar-bg" style="width: 100%; height: 12px; background: #e2e8f0; border-radius: 6px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">
                             <div id="seoScoreBar" style="width: 0%; height: 100%; transition: width 1s cubic-bezier(0.1, 0.7, 0.1, 1), background 1s;"></div>
                         </div>
                     </div>
 
-                    <div class="score-card glass" style="flex: 1 1 45%; min-width: 250px; padding: 20px; display: block; text-align: left; box-sizing: border-box;">
-                        <h3 style="margin: 0 0 12px 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; color: #e2e8f0;">
-                            <span>Performance</span><span id="perfScore" style="font-weight: 700; color: #fff;">0</span>
+                    <div class="score-card glass" style="padding: 1.5rem; align-items: stretch;">
+                        <h3 style="margin: 0 0 12px 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; color: var(--text-secondary); width: 100%;">
+                            <span>Performance</span><span id="perfScore" style="font-weight: 800; color: var(--text-primary); font-size: 1.3rem;">0</span>
                         </h3>
-                        <div class="progress-bar-bg" style="width: 100%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 6px; box-shadow: inset 0 1px 5px rgba(0,0,0,0.5);">
+                        <div class="progress-bar-bg" style="width: 100%; height: 12px; background: #e2e8f0; border-radius: 6px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">
                             <div id="perfScoreBar" style="width: 0%; height: 100%; transition: width 1s cubic-bezier(0.1, 0.7, 0.1, 1), background 1s;"></div>
                         </div>
                     </div>
 
-                    <div class="score-card glass" style="flex: 1 1 45%; min-width: 250px; padding: 20px; display: block; text-align: left; box-sizing: border-box;">
-                        <h3 style="margin: 0 0 12px 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; color: #e2e8f0;">
-                            <span>Mobile</span><span id="mobileScore" style="font-weight: 700; color: #fff;">0</span>
+                    <div class="score-card glass" style="padding: 1.5rem; align-items: stretch;">
+                        <h3 style="margin: 0 0 12px 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; color: var(--text-secondary); width: 100%;">
+                            <span>Mobile</span><span id="mobileScore" style="font-weight: 800; color: var(--text-primary); font-size: 1.3rem;">0</span>
                         </h3>
-                        <div class="progress-bar-bg" style="width: 100%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 6px; box-shadow: inset 0 1px 5px rgba(0,0,0,0.5);">
+                        <div class="progress-bar-bg" style="width: 100%; height: 12px; background: #e2e8f0; border-radius: 6px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">
                             <div id="mobileScoreBar" style="width: 0%; height: 100%; transition: width 1s cubic-bezier(0.1, 0.7, 0.1, 1), background 1s;"></div>
                         </div>
                     </div>
@@ -205,10 +205,10 @@
             </div>
 
             <!-- EXECUTIVE SUMMARY -->
-            <div id="execSummaryCard" class="panel glass" style="margin-bottom: 25px; border-left: 4px solid #a855f7; display: none; position: relative;">
-                <div style="position: absolute; top: 10px; right: 20px; font-size: 0.75rem; opacity: 0.6; font-style: italic;">AI-Generated Executive Pitch</div>
-                <h3 style="margin-bottom: 10px; color: #fff;"><i class="fa-solid fa-wand-magic-sparkles text-success"></i> Executive Summary & Business Impact</h3>
-                <p id="execSummaryText" style="font-size: 1.1rem; line-height: 1.6; color: #fff; margin: 0; font-weight: 400;"></p>
+            <div id="execSummaryCard" class="panel glass" style="margin-bottom: 25px; border-left: 4px solid var(--accent-primary); display: none; position: relative;">
+                <div style="position: absolute; top: 10px; right: 20px; font-size: 0.75rem; opacity: 0.8; font-style: italic;">AI-Generated Executive Pitch</div>
+                <h3 style="margin-bottom: 10px;"><i class="fa-solid fa-wand-magic-sparkles text-success"></i> Executive Summary & Business Impact</h3>
+                <p id="execSummaryText" style="font-size: 1.1rem; line-height: 1.6; margin: 0; font-weight: 400;"></p>
             </div>
 
             <!-- ISSUES & RECOMMENDATIONS -->
@@ -239,7 +239,7 @@
                     </div>
                     <div id="variantSelectorContainer" class="glass" style="padding: 10px; border-radius: 12px; display: flex; align-items: center; gap: 10px;">
                         <span style="font-size: 0.85rem; opacity: 0.8;">Switch Variant:</span>
-                        <select id="redesignVariantSelect" onchange="changeRedesignVariant(this.value)" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 6px; outline: none;">
+                        <select id="redesignVariantSelect" onchange="changeRedesignVariant(this.value)" style="background: #ffffff; color: var(--text-primary); border: 1px solid #cbd5e1; padding: 5px 10px; border-radius: 6px; outline: none;">
                             <option value="-1">V1 (Initial)</option>
                             <option value="0">V2 (Bonus)</option>
                             <option value="1">V3 (Bonus)</option>
@@ -425,7 +425,7 @@
             document.getElementById('pdfExportMob').innerText = document.getElementById('mobileScore').innerText;
             
             // AI Executive Summary
-            document.getElementById('pdfExportExecSummary').innerText = document.getElementById('execSummaryContent').innerText;
+            document.getElementById('pdfExportExecSummary').innerText = document.getElementById('execSummaryText').innerText;
 
             // Badges
             const badgeContent = Array.from(document.querySelectorAll('#badgeContainer .achievement-badge')).map(badge => {

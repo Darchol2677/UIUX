@@ -80,7 +80,9 @@ def audit():
             site_content['subheadline'] = ai_result['subheadlines_suggested']
 
         # Regenerate main redesign with AI-enhanced content
-        final_redesign = generate_redesign_html(site_content)
+        # Prefer the AI's fully-generated HTML page; fallback to bulletproof local engine
+        ai_html = ai_result.get("html_code", "") or ai_result.get("generated_code", "")
+        final_redesign = ai_html if len(ai_html) > 300 else generate_redesign_html(site_content)
 
         report = {
             "url": url,
