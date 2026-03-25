@@ -3,7 +3,6 @@ echo ==============================================
 echo Installing Dependencies...
 echo ==============================================
 py -m pip install -r requirements.txt
-py -m playwright install chromium
 
 echo ==============================================
 echo Starting Server...
