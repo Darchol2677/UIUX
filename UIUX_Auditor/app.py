@@ -1,4 +1,10 @@
 import os
+import sys
+
+# Add the parent directory to sys.path so 'UIUX_Auditor.xxx' imports work 
+# even when app.py is executed from inside the UIUX_Auditor folder.
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 # Skip load_dotenv if it's missing or causes prefix errors
 try:
     from dotenv import load_dotenv
@@ -87,18 +93,24 @@ def audit():
         report = {
             "url": url,
             "scores": {
-                "UI/UX Score": scores["UI/UX Score"],
-                "SEO Score": scores["SEO Score"],
-                "Performance Score": scores["Performance Score"],
-                "Mobile Score": scores["Mobile Score"],
-                "Final Score": scores["Final Score"]
+                "UI/UX Score": scores.get("UI/UX Score", 0),
+                "SEO Score": scores.get("SEO Score", 0),
+                "Performance Score": scores.get("Performance Score", 0),
+                "Accessibility Score": scores.get("Accessibility Score", 0),
+                "Best Practices Score": scores.get("Best Practices Score", 0),
+                "Mobile Score": scores.get("Mobile Score", 0),
+                "Final Score": scores.get("Final Score", 0),
+                "Grade": scores.get("Grade", "D"),
+                "Health": scores.get("Health", "Poor")
             },
-            "issues": scores["allIssues"] + ai_result.get("issues", []),
+            "ui_ux_breakdown": ai_result.get("ui_ux_breakdown", {}),
+            "key_issues": ai_result.get("key_issues", []),
             "recommendations": ai_result.get("recommendations", []),
-            "executive_summary": ai_result.get("executive_summary", ""),
+            "business_impact": ai_result.get("business_impact", {}),
+            "executive_summary": ai_result.get("executive_summary", "Review complete."),
             "generated_code": final_redesign,
             "bonus_redesigns": generate_bonus_redesigns(site_content, count=3),
-            "metrics": scores["metrics"],
+            "metrics": scores.get("metrics", {}),
             "screenshot": scrape_result.get("screenshot"),
             "html_source": html_content
         }

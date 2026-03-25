@@ -76,15 +76,19 @@ function populateDashboard(data) {
 
     document.getElementById('reportUrl').innerText = data.url;
 
-    // Set Random Persona
-    setPersona();
-
-    // Animate Scores
-    animateLinearScore('uiuxScoreBar', 'uiuxScore', data.scores["UI/UX Score"]);
-    animateLinearScore('seoScoreBar', 'seoScore', data.scores["SEO Score"]);
-    animateLinearScore('perfScoreBar', 'perfScore', data.scores["Performance Score"]);
-    animateLinearScore('mobileScoreBar', 'mobileScore', data.scores["Mobile Score"]);
+    // Grade and Health
+    document.getElementById('gradeVal').innerText = data.scores["Grade"] || "N/A";
+    document.getElementById('healthVal').innerText = data.scores["Health"] || "N/A";
+    
+    // Animate Final Score Bar
     animateLinearScore('finalScoreBar', 'finalScoreVal', data.scores["Final Score"]);
+
+    // Animate Circular Scores
+    animateCircularScore('uiuxCircle', 'uiuxScore', data.scores["UI/UX Score"]);
+    animateCircularScore('perfCircle', 'perfScore', data.scores["Performance Score"]);
+    animateCircularScore('accessCircle', 'accessScore', data.scores["Accessibility Score"]);
+    animateCircularScore('seoCircle', 'seoScore', data.scores["SEO Score"]);
+    animateCircularScore('bpCircle', 'bpScore', data.scores["Best Practices Score"]);
 
     // Executive Summary
     const execSummaryCard = document.getElementById('execSummaryCard');
@@ -96,37 +100,109 @@ function populateDashboard(data) {
         execSummaryCard.style.display = 'none';
     }
 
-    // Badges
-    renderBadges(data.scores);
+    // Populate UI/UX Breakdown
+    const uiuxBreakdownList = document.getElementById('uiuxBreakdownList');
+    uiuxBreakdownList.innerHTML = '';
+    if (data.ui_ux_breakdown) {
+        for (const [key, val] of Object.entries(data.ui_ux_breakdown)) {
+            const wrap = document.createElement('div');
+            wrap.style.marginBottom = "8px";
+            wrap.innerHTML = `
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 4px; color: var(--text-secondary);">
+                    <span>${key}</span><span>${val}/100</span>
+                </div>
+                <div style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;">
+                    <div style="width: ${val}%; height: 100%; background: var(--accent-primary); border-radius: 3px;"></div>
+                </div>
+            `;
+            uiuxBreakdownList.appendChild(wrap);
+        }
+    }
 
-    // Populate Issues
+    // Populate Business Impact
+    const businessImpactList = document.getElementById('businessImpactList');
+    businessImpactList.innerHTML = '';
+    if (data.business_impact) {
+        const icons = {
+            "digital_visibility": "fa-globe",
+            "user_engagement": "fa-users",
+            "conversion_rate": "fa-chart-line",
+            "trust": "fa-shield-halved",
+            "lead_generation": "fa-bullseye"
+        };
+        for (const [key, val] of Object.entries(data.business_impact)) {
+            if (val && val !== "N/A") {
+                const title = key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                const icon = icons[key] || "fa-check";
+                
+                const li = document.createElement('li');
+                li.style.display = "flex";
+                li.style.gap = "12px";
+                li.style.alignItems = "flex-start";
+                li.innerHTML = `
+                    <div style="background: rgba(139, 92, 246, 0.1); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--accent-secondary); flex-shrink: 0; margin-top: 2px;">
+                        <i class="fa-solid ${icon}"></i>
+                    </div>
+                    <div>
+                        <strong style="display: block; font-size: 0.95rem; color: var(--text-primary);">${title}</strong>
+                        <span style="font-size: 0.9rem; color: var(--text-secondary);">${val}</span>
+                    </div>
+                `;
+                businessImpactList.appendChild(li);
+            }
+        }
+    }
+
+    // Populate Key Issues
     const issuesList = document.getElementById('issuesList');
     issuesList.innerHTML = '';
-    if (data.issues.length === 0) {
-        issuesList.innerHTML = "<li>No major issues found!</li>";
+    if (!data.key_issues || data.key_issues.length === 0) {
+        issuesList.innerHTML = "<div style='color: var(--text-secondary);'>No major issues found!</div>";
     } else {
-        data.issues.forEach(i => {
-            const li = document.createElement('li');
-            li.textContent = i;
-            issuesList.appendChild(li);
+        data.key_issues.forEach(i => {
+            const severityColor = i.severity === "High" ? "var(--error)" : (i.severity === "Medium" ? "var(--warning)" : "var(--accent-primary)");
+            const div = document.createElement('div');
+            div.style.padding = "10px 15px";
+            div.style.background = "rgba(15, 23, 42, 0.02)";
+            div.style.borderLeft = `3px solid ${severityColor}`;
+            div.style.borderRadius = "0 8px 8px 0";
+            div.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                    <strong style="color: var(--text-primary);">${i.title}</strong>
+                    <span style="font-size: 0.75rem; font-weight: 700; background: ${severityColor}; color: white; padding: 2px 8px; border-radius: 12px;">${i.severity} Priority</span>
+                </div>
+                <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">${i.description}</p>
+            `;
+            issuesList.appendChild(div);
         });
     }
 
     // Populate Recommendations
     const recList = document.getElementById('recommendationsList');
     recList.innerHTML = '';
-    if (data.recommendations.length === 0) {
-        recList.innerHTML = "<li>No recommendations available.</li>";
+    if (!data.recommendations || data.recommendations.length === 0) {
+        recList.innerHTML = "<div style='color: var(--text-secondary);'>No recommendations available.</div>";
     } else {
         data.recommendations.forEach(r => {
-            const li = document.createElement('li');
-            li.textContent = r;
-            recList.appendChild(li);
+            const priorityColor = r.priority === "High" ? "var(--success)" : (r.priority === "Medium" ? "var(--accent-primary)" : "var(--text-secondary)");
+            const div = document.createElement('div');
+            div.style.padding = "10px 15px";
+            div.style.background = "rgba(16, 185, 129, 0.05)";
+            div.style.border = "1px solid rgba(16, 185, 129, 0.2)";
+            div.style.borderRadius = "8px";
+            div.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                    <strong style="color: var(--text-primary);"><i class="fa-solid fa-arrow-right" style="color: var(--success); margin-right: 5px;"></i> ${r.title}</strong>
+                    <span style="font-size: 0.75rem; font-weight: 700; background: ${priorityColor}; color: white; padding: 2px 8px; border-radius: 12px;">${r.priority} Value</span>
+                </div>
+                <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">${r.description}</p>
+            `;
+            recList.appendChild(div);
         });
     }
 
-    // Render Heatmap
-    lastIssues = data.issues || [];
+    // Render Heatmap (using titles of key issues as proxy)
+    lastIssues = data.key_issues ? data.key_issues.map(i => i.title) : [];
     renderHeatmap('heatmapCanvas', lastIssues);
 
     // Set Up Iframes & Screenshot
@@ -264,6 +340,38 @@ function setPersona() {
     document.getElementById('personaName').innerText = p.name;
     document.getElementById('personaQuote').innerText = `"${p.quote}"`;
     document.querySelector('.persona-avatar i').className = `fa-solid ${p.icon}`;
+}
+
+function animateCircularScore(circleId, textId, targetScore) {
+    const circle = document.getElementById(circleId);
+    const textObj = document.getElementById(textId);
+    if (!circle || !textObj) return;
+    
+    let currentScore = 0;
+    const duration = 1500;
+    const interval = 20;
+    const step = targetScore / (duration / interval);
+    
+    // Determine color based on hackathon tier
+    let color = '#ef4444'; // Red for poor
+    if (targetScore >= 90) color = '#10b981'; // Green for excellent
+    else if (targetScore >= 70) color = '#f59e0b'; // Amber for good
+    else if (targetScore >= 50) color = '#3b82f6'; // Blue for average
+    
+    // Set text color explicitly
+    textObj.style.color = color;
+    
+    const timer = setInterval(() => {
+        currentScore += step;
+        if (currentScore >= targetScore) {
+            currentScore = targetScore;
+            clearInterval(timer);
+        }
+        textObj.innerText = Math.round(currentScore);
+        
+        // Update conic gradient
+        circle.style.background = `conic-gradient(${color} ${currentScore}%, rgba(0,0,0,0.05) ${currentScore}%)`;
+    }, interval);
 }
 
 function animateLinearScore(barId, textId, target) {

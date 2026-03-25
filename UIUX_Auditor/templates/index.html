@@ -148,85 +148,104 @@
                 <button class="btn secondary-btn" onclick="generateBulletproofPDF()"><i class="fa-solid fa-file-pdf"></i> Save as PDF</button>
             </div>
 
-            <!-- SCORES -->
-            <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 2rem;">
+            <!-- EXECUTIVE SUMMARY -->
+            <div id="execSummaryCard" class="panel glass" style="margin-bottom: 25px; border-left: 4px solid var(--accent-primary); position: relative;">
+                <div style="position: absolute; top: 10px; right: 20px; font-size: 0.75rem; opacity: 0.8; font-style: italic;">Professional Overview</div>
+                <h3 style="margin-bottom: 10px;"><i class="fa-solid fa-file-contract text-success"></i> Executive Summary</h3>
+                <p id="execSummaryText" style="font-size: 1.1rem; line-height: 1.6; margin: 0; font-weight: 400;"></p>
+            </div>
+
+            <!-- OVERALL AUDIT SCORE (Grade & Health) -->
+            <div class="score-card glass" style="width: 100%; padding: 2rem; position: relative; overflow: hidden; align-items: stretch; text-align: left; margin-bottom: 15px;">
+                <h2 style="margin: 0 0 1rem 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.5rem; width: 100%;">
+                    <span><i class="fa-solid fa-ranking-star" style="color: var(--accent-primary);"></i> Overall Website Audit Score</span>
+                    <span id="finalScoreVal" style="font-size: 2.8rem; font-weight: 800; color: var(--accent-primary);">0</span>
+                </h2>
                 
-                <div class="score-card glass" style="width: 100%; padding: 2rem; position: relative; overflow: hidden; align-items: stretch; text-align: left;">
-                    <h2 style="margin: 0 0 1rem 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.5rem; width: 100%;">
-                        <span><i class="fa-solid fa-ranking-star" style="color: var(--accent-primary);"></i> Final Audit Score</span>
-                        <span id="finalScoreVal" style="font-size: 2.2rem; font-weight: 800; color: var(--accent-primary);">0</span>
-                    </h2>
-                    
-                    <!-- Updated Badge Layout (No Overlap) -->
-                    <div id="badgeContainer" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; min-height: 35px; width: 100%;"></div>
-                    
-                    <div class="progress-bar-bg" style="width: 100%; height: 28px; background: #e2e8f0; border-radius: 14px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
-                        <div id="finalScoreBar" style="width: 0%; height: 100%; transition: width 1s cubic-bezier(0.1, 0.7, 0.1, 1), background 1s;"></div>
+                <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                    <div style="background: rgba(59, 130, 246, 0.1); padding: 10px 20px; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.3);">
+                        <span style="font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase;">Website Grade</span>
+                        <div id="gradeVal" style="font-size: 2rem; font-weight: 800; color: var(--accent-primary); line-height: 1;">-</div>
+                    </div>
+                    <div style="background: rgba(16, 185, 129, 0.1); padding: 10px 20px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                        <span style="font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase;">Health Status</span>
+                        <div id="healthVal" style="font-size: 1.5rem; font-weight: 700; color: var(--success); margin-top: 5px;">-</div>
                     </div>
                 </div>
+                
+                <div class="progress-bar-bg" style="width: 100%; height: 16px; background: #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
+                    <div id="finalScoreBar" style="width: 0%; height: 100%; transition: width 1s cubic-bezier(0.1, 0.7, 0.1, 1), background 1s;"></div>
+                </div>
+            </div>
 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; width: 100%;">
-                    <div class="score-card glass" style="padding: 1.5rem; align-items: stretch;">
-                        <h3 style="margin: 0 0 12px 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; color: var(--text-secondary); width: 100%;">
-                            <span>UI/UX</span><span id="uiuxScore" style="font-weight: 800; color: var(--text-primary); font-size: 1.3rem;">0</span>
-                        </h3>
-                        <div class="progress-bar-bg" style="width: 100%; height: 12px; background: #e2e8f0; border-radius: 6px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">
-                            <div id="uiuxScoreBar" style="width: 0%; height: 100%; transition: width 1s cubic-bezier(0.1, 0.7, 0.1, 1), background 1s;"></div>
-                        </div>
+            <!-- CATEGORY-WISE SCORES -->
+            <h3 style="margin-bottom: 15px; font-family: 'Outfit';"><i class="fa-solid fa-chart-pie"></i> Category-wise Scores</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; width: 100%; margin-bottom: 25px;">
+                <div class="score-card glass" style="padding: 1.5rem; text-align: center;">
+                    <h4 style="margin: 0 0 10px 0; color: var(--text-secondary);">UI/UX Score</h4>
+                    <div class="score-circle" id="uiuxCircle">
+                        <span class="score-value" id="uiuxScore">0</span>
                     </div>
-
-                    <div class="score-card glass" style="padding: 1.5rem; align-items: stretch;">
-                        <h3 style="margin: 0 0 12px 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; color: var(--text-secondary); width: 100%;">
-                            <span>SEO</span><span id="seoScore" style="font-weight: 800; color: var(--text-primary); font-size: 1.3rem;">0</span>
-                        </h3>
-                        <div class="progress-bar-bg" style="width: 100%; height: 12px; background: #e2e8f0; border-radius: 6px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">
-                            <div id="seoScoreBar" style="width: 0%; height: 100%; transition: width 1s cubic-bezier(0.1, 0.7, 0.1, 1), background 1s;"></div>
-                        </div>
+                </div>
+                <div class="score-card glass" style="padding: 1.5rem; text-align: center;">
+                    <h4 style="margin: 0 0 10px 0; color: var(--text-secondary);">Performance</h4>
+                    <div class="score-circle" id="perfCircle">
+                        <span class="score-value" id="perfScore">0</span>
                     </div>
-
-                    <div class="score-card glass" style="padding: 1.5rem; align-items: stretch;">
-                        <h3 style="margin: 0 0 12px 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; color: var(--text-secondary); width: 100%;">
-                            <span>Performance</span><span id="perfScore" style="font-weight: 800; color: var(--text-primary); font-size: 1.3rem;">0</span>
-                        </h3>
-                        <div class="progress-bar-bg" style="width: 100%; height: 12px; background: #e2e8f0; border-radius: 6px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">
-                            <div id="perfScoreBar" style="width: 0%; height: 100%; transition: width 1s cubic-bezier(0.1, 0.7, 0.1, 1), background 1s;"></div>
-                        </div>
+                </div>
+                <div class="score-card glass" style="padding: 1.5rem; text-align: center;">
+                    <h4 style="margin: 0 0 10px 0; color: var(--text-secondary);">Accessibility</h4>
+                    <div class="score-circle" id="accessCircle">
+                        <span class="score-value" id="accessScore">0</span>
                     </div>
-
-                    <div class="score-card glass" style="padding: 1.5rem; align-items: stretch;">
-                        <h3 style="margin: 0 0 12px 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; color: var(--text-secondary); width: 100%;">
-                            <span>Mobile</span><span id="mobileScore" style="font-weight: 800; color: var(--text-primary); font-size: 1.3rem;">0</span>
-                        </h3>
-                        <div class="progress-bar-bg" style="width: 100%; height: 12px; background: #e2e8f0; border-radius: 6px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">
-                            <div id="mobileScoreBar" style="width: 0%; height: 100%; transition: width 1s cubic-bezier(0.1, 0.7, 0.1, 1), background 1s;"></div>
-                        </div>
+                </div>
+                <div class="score-card glass" style="padding: 1.5rem; text-align: center;">
+                    <h4 style="margin: 0 0 10px 0; color: var(--text-secondary);">SEO</h4>
+                    <div class="score-circle" id="seoCircle">
+                        <span class="score-value" id="seoScore">0</span>
+                    </div>
+                </div>
+                <div class="score-card glass" style="padding: 1.5rem; text-align: center;">
+                    <h4 style="margin: 0 0 10px 0; color: var(--text-secondary);">Best Practices</h4>
+                    <div class="score-circle" id="bpCircle">
+                        <span class="score-value" id="bpScore">0</span>
                     </div>
                 </div>
             </div>
 
-            <!-- EXECUTIVE SUMMARY -->
-            <div id="execSummaryCard" class="panel glass" style="margin-bottom: 25px; border-left: 4px solid var(--accent-primary); display: none; position: relative;">
-                <div style="position: absolute; top: 10px; right: 20px; font-size: 0.75rem; opacity: 0.8; font-style: italic;">AI-Generated Executive Pitch</div>
-                <h3 style="margin-bottom: 10px;"><i class="fa-solid fa-wand-magic-sparkles text-success"></i> Executive Summary & Business Impact</h3>
-                <p id="execSummaryText" style="font-size: 1.1rem; line-height: 1.6; margin: 0; font-weight: 400;"></p>
+            <!-- UI/UX BREAKDOWN & BUSINESS IMPACT -->
+            <div class="details-grid">
+                <!-- UI/UX Breakdown -->
+                <div class="panel glass">
+                    <h3><i class="fa-solid fa-eye text-success"></i> detailed UI/UX Breakdown</h3>
+                    <div id="uiuxBreakdownList" style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
+                        <!-- Generated via JS -->
+                    </div>
+                </div>
+
+                <!-- Business Impact -->
+                <div class="panel glass" style="border-left: 4px solid var(--accent-secondary);">
+                    <h3><i class="fa-solid fa-sack-dollar" style="color: var(--accent-secondary);"></i> Business Impact</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 15px;">How fixing these issues improves your bottom line:</p>
+                    <ul id="businessImpactList" style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 12px;">
+                        <!-- Generated via JS -->
+                    </ul>
+                </div>
             </div>
 
             <!-- ISSUES & RECOMMENDATIONS -->
             <div class="details-grid">
-                <div class="panel glass">
-                    <h3><i class="fa-solid fa-triangle-exclamation text-error"></i> Detected Issues</h3>
-                    <ul class="issue-list" id="issuesList"></ul>
-                </div>
-                <div class="panel glass">
-                    <div class="persona-banner" id="personaBanner">
-                        <div class="persona-avatar"><i class="fa-solid fa-user-tie"></i></div>
-                        <div>
-                            <strong id="personaName">UX Critic</strong>
-                            <p id="personaQuote" style="font-size: 0.85rem; opacity: 0.8;">"Let's see if this design survives my standards..."</p>
-                        </div>
+                <div class="panel glass" style="border-top: 4px solid var(--error);">
+                    <h3><i class="fa-solid fa-triangle-exclamation text-error"></i> Key Issues Detected</h3>
+                    <div id="issuesList" style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
+                        <!-- Generated via JS -->
                     </div>
-                    <h3><i class="fa-solid fa-lightbulb text-success"></i> AI Recommendations</h3>
-                    <ul class="recommendation-list" id="recommendationsList"></ul>
+                </div>
+                <div class="panel glass" style="border-top: 4px solid var(--success);">
+                    <h3><i class="fa-solid fa-lightbulb text-success"></i> Improvement Recommendations</h3>
+                    <div id="recommendationsList" style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
+                        <!-- Generated via JS -->
+                    </div>
                 </div>
             </div>
 
@@ -381,83 +400,111 @@
 
     <!-- DEDICATED PDF EXPORT CONTAINER (HIDDEN UNTIL CAPTURE) -->
     <div id="pdf-export-container" style="display: none; background: white; color: black; padding: 40px; font-family: 'Inter', sans-serif; width: 800px;">
-        <h1 style="color: #111; font-size: 28px; border-bottom: 2px solid #ccc; padding-bottom: 10px;">UI/UX Audit Report</h1>
+        <h1 style="color: #111; font-size: 28px; border-bottom: 2px solid #ccc; padding-bottom: 10px;">Website Audit Report</h1>
         <p style="font-size: 16px; color: #333;"><strong>Target URL:</strong> <span id="pdfExportUrl"></span></p>
 
-        <div style="margin-top: 20px; background: #f8f9fa; border-left: 5px solid #8b5cf6; padding: 15px;">
-            <h3 style="margin: 0 0 10px 0; color: #111;">AI Executive Pitch</h3>
+        <div style="display: flex; gap: 20px; align-items: center; margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+            <div>
+                <p style="margin: 0; font-size: 14px; text-transform: uppercase; color: #666;">Final Score</p>
+                <h2 id="pdfExportFinal" style="margin: 0; font-size: 36px; color: #8b5cf6;">0</h2>
+            </div>
+            <div style="border-left: 2px solid #ddd; padding-left: 20px;">
+                <p style="margin: 0; font-size: 14px; text-transform: uppercase; color: #666;">Grade</p>
+                <h2 id="pdfExportGrade" style="margin: 0; font-size: 24px; color: #3b82f6;">-</h2>
+            </div>
+            <div style="border-left: 2px solid #ddd; padding-left: 20px;">
+                <p style="margin: 0; font-size: 14px; text-transform: uppercase; color: #666;">Health Status</p>
+                <h2 id="pdfExportHealth" style="margin: 0; font-size: 24px; color: #10b981;">-</h2>
+            </div>
+        </div>
+
+        <div style="margin-top: 25px; background: #f8f9fa; border-left: 5px solid #8b5cf6; padding: 15px;">
+            <h3 style="margin: 0 0 10px 0; color: #111;">Executive Summary</h3>
             <p id="pdfExportExecSummary" style="margin: 0; font-size: 14px; line-height: 1.5; color: #444; font-style: italic;"></p>
         </div>
 
-        <div id="pdfExportBadgeRow" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;"></div>
-
-        <h2 style="margin-top: 30px; color: #111; border-bottom: 1px solid #eee; padding-bottom: 5px;">Core Audit Scores</h2>
+        <h2 style="margin-top: 30px; color: #111; border-bottom: 1px solid #eee; padding-bottom: 5px;">Category Scores</h2>
         <table style="width: 100%; margin-top: 15px; border-collapse: collapse;">
             <tr style="background: #10b981; color: white;">
-                <th style="padding: 10px; text-align: center; border: 1px solid #ddd; width: 25%;">UI/UX</th>
-                <th style="padding: 10px; text-align: center; border: 1px solid #ddd; width: 25%;">SEO</th>
-                <th style="padding: 10px; text-align: center; border: 1px solid #ddd; width: 25%;">Performance</th>
-                <th style="padding: 10px; text-align: center; border: 1px solid #ddd; width: 25%;">Mobile</th>
+                <th style="padding: 10px; text-align: center; border: 1px solid #ddd; width: 20%;">UI/UX</th>
+                <th style="padding: 10px; text-align: center; border: 1px solid #ddd; width: 20%;">Perf</th>
+                <th style="padding: 10px; text-align: center; border: 1px solid #ddd; width: 20%;">Access</th>
+                <th style="padding: 10px; text-align: center; border: 1px solid #ddd; width: 20%;">SEO</th>
+                <th style="padding: 10px; text-align: center; border: 1px solid #ddd; width: 20%;">Best Prac.</th>
             </tr>
             <tr>
-                <td style="padding: 15px; text-align: center; border: 1px solid #ddd; font-size: 24px; font-weight: bold; color: #111;"><span id="pdfExportUiux">0</span>/100</td>
-                <td style="padding: 15px; text-align: center; border: 1px solid #ddd; font-size: 24px; font-weight: bold; color: #111;"><span id="pdfExportSeo">0</span>/100</td>
-                <td style="padding: 15px; text-align: center; border: 1px solid #ddd; font-size: 24px; font-weight: bold; color: #111;"><span id="pdfExportPerf">0</span>/100</td>
-                <td style="padding: 15px; text-align: center; border: 1px solid #ddd; font-size: 24px; font-weight: bold; color: #111;"><span id="pdfExportMob">0</span>/100</td>
+                <td style="padding: 15px; text-align: center; border: 1px solid #ddd; font-size: 20px; font-weight: bold; color: #111;"><span id="pdfExportUiux">0</span></td>
+                <td style="padding: 15px; text-align: center; border: 1px solid #ddd; font-size: 20px; font-weight: bold; color: #111;"><span id="pdfExportPerf">0</span></td>
+                <td style="padding: 15px; text-align: center; border: 1px solid #ddd; font-size: 20px; font-weight: bold; color: #111;"><span id="pdfExportAccess">0</span></td>
+                <td style="padding: 15px; text-align: center; border: 1px solid #ddd; font-size: 20px; font-weight: bold; color: #111;"><span id="pdfExportSeo">0</span></td>
+                <td style="padding: 15px; text-align: center; border: 1px solid #ddd; font-size: 20px; font-weight: bold; color: #111;"><span id="pdfExportBp">0</span></td>
             </tr>
         </table>
 
-        <h2 style="margin-top: 30px; color: #111; border-bottom: 1px solid #eee; padding-bottom: 5px;">Detected Issues</h2>
+        <h2 style="margin-top: 30px; color: #111; border-bottom: 1px solid #eee; padding-bottom: 5px;">Key Issues Detected</h2>
         <div id="pdfExportIssues" style="margin-top: 10px; font-size: 14px; color: #444;"></div>
 
-        <h2 style="margin-top: 30px; color: #111; border-bottom: 1px solid #eee; padding-bottom: 5px;">AI Recommendations</h2>
+        <h2 style="margin-top: 20px; color: #111; border-bottom: 1px solid #eee; padding-bottom: 5px;">AI Recommendations</h2>
         <div id="pdfExportRecommendations" style="margin-top: 10px; font-size: 14px; color: #444;"></div>
+        
+        <h2 style="margin-top: 20px; color: #111; border-bottom: 1px solid #eee; padding-bottom: 5px;">Business Impact</h2>
+        <div id="pdfExportImpact" style="margin-top: 10px; font-size: 14px; color: #444;"></div>
     </div>
 
     <!-- JavaScript overrides for direct HTML2PDF export -->
     <script>
         function generateBulletproofPDF() {
-            // 1. Populate the hidden container with live data
-            document.getElementById('pdfExportUrl').innerText = document.getElementById('reportUrl').innerText;
-            document.getElementById('pdfExportUiux').innerText = document.getElementById('uiuxScore').innerText;
-            document.getElementById('pdfExportSeo').innerText = document.getElementById('seoScore').innerText;
-            document.getElementById('pdfExportPerf').innerText = document.getElementById('perfScore').innerText;
-            document.getElementById('pdfExportMob').innerText = document.getElementById('mobileScore').innerText;
-            
-            // AI Executive Summary
-            document.getElementById('pdfExportExecSummary').innerText = document.getElementById('execSummaryText').innerText;
+            try {
+                // Populate the hidden container with live data
+                document.getElementById('pdfExportUrl').innerText = document.getElementById('reportUrl').innerText;
+                document.getElementById('pdfExportFinal').innerText = document.getElementById('finalScoreVal').innerText;
+                document.getElementById('pdfExportGrade').innerText = document.getElementById('gradeVal').innerText;
+                document.getElementById('pdfExportHealth').innerText = document.getElementById('healthVal').innerText;
 
-            // Badges
-            const badgeContent = Array.from(document.querySelectorAll('#badgeContainer .achievement-badge')).map(badge => {
-                return `<span style="padding: 4px 10px; background: #eee; border-radius: 15px; font-size: 12px; font-weight: bold; margin-right: 5px; border: 1px solid #ccc;">${badge.innerText}</span>`;
-            }).join('');
-            document.getElementById('pdfExportBadgeRow').innerHTML = badgeContent;
+                document.getElementById('pdfExportUiux').innerText = document.getElementById('uiuxScore').innerText;
+                document.getElementById('pdfExportPerf').innerText = document.getElementById('perfScore').innerText;
+                document.getElementById('pdfExportAccess').innerText = document.getElementById('accessScore').innerText;
+                document.getElementById('pdfExportSeo').innerText = document.getElementById('seoScore').innerText;
+                document.getElementById('pdfExportBp').innerText = document.getElementById('bpScore').innerText;
+                
+                // AI Executive Summary
+                document.getElementById('pdfExportExecSummary').innerText = document.getElementById('execSummaryText').innerText;
 
-            // Format lists for simple HTML
-            const issuesItems = Array.from(document.querySelectorAll('#issuesList li')).map(li => `<li style="margin-bottom: 8px;">${li.innerText}</li>`).join('');
-            document.getElementById('pdfExportIssues').innerHTML = issuesItems ? `<ul style="padding-left: 20px;">${issuesItems}</ul>` : '<p>No critical issues detected.</p>';
-            
-            const recItems = Array.from(document.querySelectorAll('#recommendationsList li')).map(li => `<li style="margin-bottom: 8px;">${li.innerText}</li>`).join('');
-            document.getElementById('pdfExportRecommendations').innerHTML = recItems ? `<ul style="padding-left: 20px;">${recItems}</ul>` : '<p>No recommendations available.</p>';
+                // Format lists for simple HTML
+                const issuesHtml = document.getElementById('issuesList').innerHTML;
+                document.getElementById('pdfExportIssues').innerHTML = issuesHtml || '<p>No critical issues detected.</p>';
+                
+                const recHtml = document.getElementById('recommendationsList').innerHTML;
+                document.getElementById('pdfExportRecommendations').innerHTML = recHtml || '<p>No recommendations available.</p>';
+                
+                const impactHtml = document.getElementById('businessImpactList').innerHTML;
+                document.getElementById('pdfExportImpact').innerHTML = impactHtml ? `<ul style="padding-left: 20px;">${impactHtml}</ul>` : '<p>No business impact generated.</p>';
 
-            // 2. Temporarily display the container for html2canvas
-            const pdfContainer = document.getElementById('pdf-export-container');
-            pdfContainer.style.display = 'block';
+                // Temporarily display the container for html2canvas
+                const pdfContainer = document.getElementById('pdf-export-container');
+                pdfContainer.style.display = 'block';
 
-            // 3. Configure html2pdf to process ONLY this clean container
-            const opt = {
-                margin:       15,
-                filename:     'audit_report.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
+                // Configure html2pdf
+                const opt = {
+                    margin:       15,
+                    filename:     'website_audit_report.pdf',
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
 
-            // 4. Generate and save
-            html2pdf().set(opt).from(pdfContainer).save().then(() => {
-                // 5. Hide container again after successful download
-                pdfContainer.style.display = 'none';
-            });
+                // Generate and save
+                html2pdf().set(opt).from(pdfContainer).save().then(() => {
+                    pdfContainer.style.display = 'none';
+                }).catch(err => {
+                    console.error("PDF Generation error:", err);
+                    pdfContainer.style.display = 'none';
+                    alert("Error generating PDF. See console for details.");
+                });
+            } catch (e) {
+                console.error("Error setting up PDF:", e);
+                alert("Error setting up PDF export.");
+            }
         }
     </script>
     <script src="static/app.js?v=9"></script>
